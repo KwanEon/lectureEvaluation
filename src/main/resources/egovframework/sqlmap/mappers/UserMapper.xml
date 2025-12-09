@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.example.mapper.UserMapper">
+
+    <resultMap id="UserMap" type="egovframework.example.dto.UserDTO">
+        <id property="id" column="id"/>
+        <result property="userName" column="userName"/>
+        <result property="userPassword" column="userPassword"/>
+        <result property="userEmail" column="userEmail"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserMap">
+        SELECT * FROM users 
+        WHERE id = #{id}
+    </select>
+    
+    <select id="findByUserName" resultMap="UserMap">
+        SELECT * FROM users 
+        WHERE userName = #{userName}
+    </select>
+    
+    <select id="findByUserEmail" resultMap="UserMap">
+        SELECT * FROM users 
+        WHERE userEmail = #{userEmail}
+    </select>
+    
+    <select id="findIdByUserName" resultType="Long">
+        SELECT id FROM users 
+        WHERE userName = #{userName}
+    </select>
+
+    <select id="findPasswordByUserName" resultType="string">
+        SELECT userPassword FROM users 
+        WHERE userName = #{userName}
+    </select>
+
+    <insert id="insertUser">
+        INSERT INTO users (id, userName, userPassword, userEmail)
+        VALUES (#{id}, #{userName}, #{userPassword}, #{userEmail})
+    </insert>
+
+    <select id="findUserEmail" resultType="string">
+        SELECT userEmail FROM users 
+        WHERE id = #{id}
+    </select>
+
+
+</mapper>

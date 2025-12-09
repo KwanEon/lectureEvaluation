@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="egovframework.example.mapper.EvaluationMapper">
+	
+	<resultMap id="EvaluationMap" type="egovframework.example.dto.EvaluationDTO">
+		<id property="id" column="id"/>
+		<result property="userId" column="userId"/>
+		<result property="lectureName" column="lectureName"/>
+        <result property="lectureYear" column="lectureYear"/>
+        <result property="semesterDivide" column="semesterDivide"/>
+        <result property="lectureDivide" column="lectureDivide"/>
+        <result property="evaluationTitle" column="evaluationTitle"/>
+        <result property="evaluationContent" column="evaluationContent"/>
+        <result property="totalScore" column="totalScore"/>
+        <result property="creditScore" column="creditScore"/>
+        <result property="comfortableScore" column="comfortableScore"/>
+        <result property="lectureScore" column="lectureScore"/>
+        <result property="likeCount" column="likeCount"/>
+	</resultMap>
+	
+	<resultMap id="LikeyMap" type="egovframework.example.dto.LikeyDTO">
+		<id property="evaluationId" column="evaluationId"/>
+		<id property="userId" column="userId"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="EvaluationMap">
+		SELECT * FROM EVALUATION
+	</select>
+	
+	<select id="findBySearch" resultMap="EvaluationMap" parameterType="map">
+		SELECT * FROM EVALUATION
+		<where>
+		    <if test="lectureDivide != null and lectureDivide != '' and lectureDivide != '전체'">
+		        lectureDivide = #{lectureDivide}
+		    </if>
+		
+		    <if test="search != null and search != ''">
+		        <if test="lectureDivide != null and lectureDivide != '' and lectureDivide != '전체'">
+		            AND
+		        </if>
+		        (lectureName LIKE CONCAT('%', #{search}, '%')
+		         OR professorName LIKE CONCAT('%', #{search}, '%'))
+		    </if>
+		</where>
+		ORDER BY id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<select id="countEvaluations" resultType="int" parameterType="map">
+		SELECT COUNT(*) FROM EVALUATION
+		<where>
+			<if test="lectureDivide != null and lectureDivide != '' and lectureDivide != '전체'">
+				lectureDivide = #{lectureDivide}
+			</if>
+			
+			<if test="search != null and search != ''">
+				<if test="lectureDivide != null and lectureDivide != '' and lectureDivide != '전체'">
+					AND
+				</if>
+				(lectureName LIKE CONCAT('%', #{search}, '%')
+	       		OR professorName LIKE CONCAT('%', #{search}, '%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByUserId" resultMap="EvaluationMap">
+		SELECT * FROM EVALUATION 
+		WHERE userId = #{userId} ORDER BY id DESC
+	</select>
+	
+	<select id="findById" resultMap="EvaluationMap">
+        SELECT * FROM EVALUATION 
+        WHERE id = #{evaluationId}
+    </select>
+    
+    <insert id="insertEvaluation">
+    	INSERT INTO EVALUATION
+    	(userId, lectureName, professorName, lectureYear, semesterDivide, lectureDivide, evaluationTitle, evaluationContent,
+    	 totalScore, creditScore, comfortableScore, lectureScore, likeCount) 
+    	VALUES 
+    	(#{userId}, #{lectureName}, #{professorName}, #{lectureYear}, #{semesterDivide}, #{lectureDivide},
+         #{evaluationTitle}, #{evaluationContent}, #{totalScore}, #{creditScore}, #{comfortableScore},
+         #{lectureScore}, 0)
+    </insert>
+    
+    <update id="updateEvaluation">
+    	UPDATE EVALUATION
+    	SET lectureName = #{lectureName},
+            lectureYear = #{lectureYear},
+            semesterDivide = #{semesterDivide},
+            lectureDivide = #{lectureDivide},
+            evaluationTitle = #{evaluationTitle},
+            evaluationContent = #{evaluationContent},
+            totalScore = #{totalScore},
+            creditScore = #{creditScore},
+            comfortableScore = #{comfortableScore},
+            lectureScore = #{lectureScore}
+        WHERE id = #{evaluationId}
+    </update>
+    
+    <delete id="deleteEvaluation">
+    	DELETE FROM EVALUATION 
+    	WHERE id = #{evaluationId}
+    </delete>
+    
+    <select id="existsLike" resultType="int">
+	    SELECT COUNT(*) FROM LIKEY 
+	    WHERE evaluationId = #{evaluationId} AND userId = #{userId}
+	</select>
+    
+    <insert id="insertLikey">
+    	INSERT INTO LIKEY(evaluationId, userId) VALUES (#{evaluationId}, #{userId})
+    </insert>
+    
+    <update id="incrementLikeCount">
+        UPDATE EVALUATION 
+        SET likeCount = likeCount + 1
+        WHERE id = #{evaluationId}
+    </update>
+    
+</mapper>

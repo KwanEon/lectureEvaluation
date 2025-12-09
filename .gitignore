@@ -1,0 +1,15 @@
+/target/
+/bin/
+/.classpath
+/.project
+/.settings/
+/.metadata/
+.factorypath
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# DB 보안
+db.properties
